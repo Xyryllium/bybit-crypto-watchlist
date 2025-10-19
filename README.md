@@ -1,40 +1,55 @@
-# Welcome to React Router!
+# Bybit Trading Charts
 
-A modern, production-ready template for building full-stack React applications using React Router.
+A real-time cryptocurrency trading interface built with React Router, featuring live Bybit perpetual contracts data, interactive candlestick charts, and market watchlists.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## What This App Does
 
-## Features
+This application provides a clean, professional interface for monitoring cryptocurrency markets using Bybit's WebSocket API. It displays real-time price data, volume information, and trading activity for perpetual contracts.
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+### Key Features
+
+- **Live Market Data**: Real-time price feeds from Bybit WebSocket API
+- **Interactive Charts**: Professional candlestick charts with multiple timeframes
+- **Market Watchlist**: Track multiple trading pairs simultaneously
+- **Volume Analysis**: Monitor trading volume and activity
+- **Responsive Design**: Works on desktop and mobile devices
+
+## Tech Stack
+
+- **Frontend**: React Router v7 with TypeScript
+- **Styling**: Tailwind CSS with custom dark theme
+- **Charts**: Custom chart implementation for candlestick data
+- **Real-time Data**: WebSocket connections to Bybit API
+- **Build Tool**: Vite for fast development and building
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
 ### Installation
 
-Install the dependencies:
+Clone the repository and install dependencies:
 
 ```bash
+git clone <repository-url>
+cd bybit-crypto-watchlist
 npm install
 ```
 
 ### Development
 
-Start the development server with HMR:
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+The application will be available at `http://localhost:5173`.
 
-## Building for Production
+### Building for Production
 
 Create a production build:
 
@@ -42,46 +57,70 @@ Create a production build:
 npm run build
 ```
 
+## Project Structure
+
+```
+app/
+├── components/          # Reusable UI components
+│   ├── BybitKlineChart.tsx    # Main chart component
+│   ├── BybitWatchlist.tsx     # Market watchlist
+│   ├── VolumeTradeLog.tsx     # Trading volume display
+│   └── ui/                    # Base UI components
+├── contexts/            # React contexts
+│   └── BybitWebSocketContext.tsx
+├── hooks/               # Custom React hooks
+├── lib/                 # Utility functions and API clients
+├── routes/              # Page components
+│   ├── trading.tsx      # Main trading interface (index)
+│   └── home.tsx         # Landing page
+└── root.tsx             # App root component
+```
+
+## API Integration
+
+The app connects to Bybit's WebSocket API for real-time market data:
+
+- **Kline Data**: Candlestick chart information
+- **Ticker Data**: Real-time price updates
+- **Trade Data**: Recent trading activity
+- **Symbols**: Available trading pairs
+
 ## Deployment
 
-### Docker Deployment
+### Docker
 
-To build and run using Docker:
+Build and run with Docker:
 
 ```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
+docker build -t bybit-crypto-watchlist .
+docker run -p 3000:3000 bybit-crypto-watchlist
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
+### Manual Deployment
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+Deploy the built application:
 
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+```bash
+npm run build
+# Deploy the build/ directory to your hosting platform
 ```
 
-## Styling
+## Configuration
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+The application uses environment variables for configuration. Create a `.env` file:
+
+```env
+# Add any required environment variables here
+```
+
+## Contributing
+
+This is a personal project for cryptocurrency market monitoring. Feel free to fork and modify for your own use.
+
+## License
+
+MIT License - see LICENSE file for details.
 
 ---
 
-Built with ❤️ using React Router.
+Built with React Router and real market data from Bybit.

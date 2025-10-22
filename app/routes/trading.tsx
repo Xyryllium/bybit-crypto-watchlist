@@ -2,6 +2,9 @@ import { useState } from "react";
 import { BybitWatchlist } from "../components/BybitWatchlist";
 import { BybitKlineChart } from "../components/BybitKlineChart";
 import VolumeTradeLog from "../components/VolumeTradeLog";
+import VolumeBreakoutLog from "../components/VolumeBreakoutLog";
+import VPTAlerts from "../components/VPTAlerts";
+import { NotificationSettings } from "../components/NotificationSettings";
 import { BybitWebSocketProvider } from "../contexts/BybitWebSocketContext";
 import { BarChart3 } from "lucide-react";
 
@@ -20,18 +23,27 @@ export default function Trading() {
                 </h1>
               </div>
             </div>
+            <NotificationSettings />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <BybitKlineChart symbol={activeSymbol} />
-            </div>
-            <div className="lg:col-span-1">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
+            <div className="lg:col-span-1 xl:col-span-1">
               <BybitWatchlist onSelect={(s) => setActiveSymbol(s)} />
             </div>
+            <div className="lg:col-span-1 xl:col-span-1">
+              <VolumeTradeLog onSymbolClick={(symbol) => setActiveSymbol(symbol)} />
+            </div>
+            <div className="lg:col-span-1 xl:col-span-1">
+              <VolumeBreakoutLog onSymbolClick={(symbol) => setActiveSymbol(symbol)} />
+            </div>
+            <div className="lg:col-span-1 xl:col-span-1">
+              <VPTAlerts onSymbolClick={(symbol) => setActiveSymbol(symbol)} />
+            </div>
           </div>
 
-          <VolumeTradeLog onSymbolClick={(symbol) => setActiveSymbol(symbol)} />
+          <div className="w-full">
+            <BybitKlineChart symbol={activeSymbol} />
+          </div>
         </div>
       </div>
     </BybitWebSocketProvider>

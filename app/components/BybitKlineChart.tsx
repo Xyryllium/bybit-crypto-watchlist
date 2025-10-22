@@ -300,7 +300,7 @@ export function BybitKlineChart({ symbol }: { symbol: string }) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[750px] bg-white rounded-lg border border-gray-200 p-6">
+        <div className="h-[500px] sm:h-[550px] xl:h-[600px] bg-white rounded-lg border border-gray-200 p-6">
           {filteredData.length === 0 ? (
             <div className="h-full flex items-center justify-center text-gray-400">
               Loading chart data...

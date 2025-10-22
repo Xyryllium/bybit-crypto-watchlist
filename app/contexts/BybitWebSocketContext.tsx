@@ -36,13 +36,13 @@ export function BybitWebSocketProvider({ children }: { children: ReactNode }) {
       try {
         const endpoint =
           BYBIT_WS_ENDPOINTS[endpointIndexRef.current] ?? BYBIT_WS_ENDPOINTS[0];
-        console.info("Bybit shared WS connecting to", endpoint);
+        //console.info("Bybit shared WS connecting to", endpoint);
         const ws = new WebSocket(endpoint);
         socketRef.current = ws;
 
         ws.onopen = () => {
           setIsConnected(true);
-          console.info("Bybit shared WS connected");
+          //console.info("Bybit shared WS connected");
 
           if (subscribedTopicsRef.current.size > 0) {
             ws.send(
@@ -128,21 +128,27 @@ export function BybitWebSocketProvider({ children }: { children: ReactNode }) {
       clearTimers();
       try {
         socketRef.current?.close();
-      } catch {}
+      } catch { }
     };
   }, []);
 
   const subscribe = (topics: string[], handler: MessageHandler) => {
+    const newTopics: string[] = [];
+
     topics.forEach((topic) => {
       if (!handlersRef.current.has(topic)) {
         handlersRef.current.set(topic, new Set());
       }
       handlersRef.current.get(topic)!.add(handler);
       subscribedTopicsRef.current.add(topic);
+
+      if (handlersRef.current.get(topic)!.size === 1) {
+        newTopics.push(topic);
+      }
     });
 
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
-      socketRef.current.send(JSON.stringify({ op: "subscribe", args: topics }));
+    if (socketRef.current?.readyState === WebSocket.OPEN && newTopics.length > 0) {
+      socketRef.current.send(JSON.stringify({ op: "subscribe", args: newTopics }));
     }
 
     return () => {
@@ -159,7 +165,7 @@ export function BybitWebSocketProvider({ children }: { children: ReactNode }) {
                 socketRef.current.send(
                   JSON.stringify({ op: "unsubscribe", args: [topic] })
                 );
-              } catch {}
+              } catch { }
             }
           }
         }

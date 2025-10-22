@@ -144,7 +144,7 @@ export function BybitWatchlist({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="divide-y divide-gray-200 h-[800px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+        <div className="divide-y divide-gray-200 h-[300px] sm:h-[350px] xl:h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
           {ordered.map((row) => {
             const isUp =
               row.changePct !== undefined && !isNaN(row.changePct)

@@ -6,12 +6,12 @@ import { formatPrice, formatPercentage, classNames } from "~/lib/utils";
 // Configuration constants
 const CONFIG = {
   MAX_LOGS: 50,
-  SPIKE_THRESHOLD: 20, // % increase
-  MIN_VOLUME_FILTER: 100000, // 100K minimum volume
-  MIN_PRICE_CHANGE: 1, // 1% minimum price change
+  SPIKE_THRESHOLD: 20,
+  MIN_VOLUME_FILTER: 100000,
+  MIN_PRICE_CHANGE: 1,
   HISTORY_MINUTES: 10,
-  CLEANUP_INTERVAL: 60000, // 1 minute
-  SPIKE_RETENTION: 5 * 60 * 1000, // 5 minutes
+  CLEANUP_INTERVAL: 60000,
+  SPIKE_RETENTION: 5 * 60 * 1000,
 } as const;
 
 interface VolumeSpike {
@@ -57,7 +57,8 @@ export default function VolumeTradeLog({ onSymbolClick }: VolumeTradeLogProps) {
 
   const calculateVolumeChange = (current: number, previous: number): number => {
     if (previous === 0) return 1000;
-    return ((current - previous) / previous) * 100;
+    const change = ((current - previous) / previous) * 100;
+    return Math.min(Math.max(change, -1000), 1000);
   };
 
   const createVolumeSpike = (
@@ -93,7 +94,6 @@ export default function VolumeTradeLog({ onSymbolClick }: VolumeTradeLogProps) {
         const history = prev[symbol] || [];
         const currentMinuteStart = Math.floor(currentTime / 60000) * 60000;
 
-        // Find or create snapshot for this minute
         let currentSnapshot = history.find(
           (h) => h.minuteStart === currentMinuteStart
         );
@@ -112,14 +112,12 @@ export default function VolumeTradeLog({ onSymbolClick }: VolumeTradeLogProps) {
           currentSnapshot.price = closePrice;
         }
 
-        // Keep only recent history
         const cutoffTime = currentTime - CONFIG.HISTORY_MINUTES * 60 * 1000;
         const filteredHistory = history.filter((h) => h.timestamp > cutoffTime);
         const sortedHistory = filteredHistory.sort(
           (a, b) => a.minuteStart - b.minuteStart
         );
 
-        // Check for volume spike
         const currentIndex = sortedHistory.findIndex(
           (h) => h.minuteStart === currentMinuteStart
         );
@@ -132,20 +130,17 @@ export default function VolumeTradeLog({ onSymbolClick }: VolumeTradeLogProps) {
             previousSnapshot.volume
           );
 
-          // Detect spike if conditions are met
           if (
             volumeChange >= CONFIG.SPIKE_THRESHOLD &&
             currentSnapshot.volume >= CONFIG.MIN_VOLUME_FILTER
           ) {
-            // Calculate price change from previous minute
             const priceChange =
               previousSnapshot.price > 0
                 ? ((currentSnapshot.price - previousSnapshot.price) /
-                    previousSnapshot.price) *
-                  100
+                  previousSnapshot.price) *
+                100
                 : 0;
 
-            // Only show spikes with significant price change
             const absPriceChange = Math.abs(priceChange);
             if (absPriceChange < CONFIG.MIN_PRICE_CHANGE) {
               return { ...prev, [symbol]: sortedHistory };
@@ -160,16 +155,14 @@ export default function VolumeTradeLog({ onSymbolClick }: VolumeTradeLogProps) {
               currentTime
             );
 
-            // Update spike with minute-to-minute price change
             spike.priceChange = priceChange;
 
             setVolumeSpikes((prev) => {
-              // Check if we already have a spike for this symbol at this minute
               const isDuplicate = prev.some(
                 (s) =>
                   s.symbol === spike.symbol &&
                   Math.floor(s.timestamp / 60000) ===
-                    Math.floor(spike.timestamp / 60000)
+                  Math.floor(spike.timestamp / 60000)
               );
 
               if (isDuplicate) return prev;
@@ -211,9 +204,8 @@ export default function VolumeTradeLog({ onSymbolClick }: VolumeTradeLogProps) {
     const topics = POPULAR_SYMBOLS.map((s) => `kline.1.${s.name}`);
     const unsubscribe = subscribe(topics, handleVolumeMessage);
     return unsubscribe;
-  }, [subscribe, handleVolumeMessage]);
+  }, [subscribe]);
 
-  // Clean up old spikes
   useEffect(() => {
     const cleanupInterval = setInterval(() => {
       const cutoffTime = Date.now() - CONFIG.SPIKE_RETENTION;
@@ -256,7 +248,7 @@ export default function VolumeTradeLog({ onSymbolClick }: VolumeTradeLogProps) {
   };
 
   return (
-    <div className="h-48 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+    <div className="h-[300px] sm:h-[350px] xl:h-[400px] bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
       <div className="h-full flex flex-col">
         <div className="flex-shrink-0 px-4 py-2 bg-gray-50 border-b border-gray-200">
           <div className="flex items-center justify-between">
@@ -274,14 +266,14 @@ export default function VolumeTradeLog({ onSymbolClick }: VolumeTradeLogProps) {
         </div>
 
         <div
-          className="flex-1 overflow-y-auto volume-log-scroll"
+          className={`flex-1 overflow-y-auto volume-log-scroll ${volumeSpikes.length === 0 ? 'flex items-center justify-center' : ''}`}
           style={{
             scrollbarWidth: "thin",
             scrollbarColor: "#9ca3af #f3f4f6",
           }}
         >
           {volumeSpikes.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+            <div className="text-gray-500 text-sm text-center">
               No volume spikes detected (monitoring minute-by-minute)
             </div>
           ) : (
